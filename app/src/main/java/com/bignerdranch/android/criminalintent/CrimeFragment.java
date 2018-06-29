@@ -1,5 +1,6 @@
 package com.bignerdranch.android.criminalintent;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,6 +13,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 import java.util.List;
 import java.util.UUID;
@@ -28,6 +30,8 @@ public class CrimeFragment extends Fragment {
     private EditText mTitleField;
     private Button mDateButton;
     private CheckBox mSolvedCheckBox;
+    private ImageButton mFirstPageButton;
+    private ImageButton mLastPageButton;
 
     public static CrimeFragment newInstance(UUID crimeId) {
         Bundle args = new Bundle();
@@ -82,6 +86,23 @@ public class CrimeFragment extends Fragment {
                 mCrime.setSolved(isChecked);
             } });
 
+        mFirstPageButton = (ImageButton) v.findViewById(R.id.first_page_buttom);
+        mFirstPageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = CrimePagerActivity.newIntent(getActivity(), mCrime.getId(), 1);
+                startActivity(intent);
+            }
+        });
+
+        mLastPageButton = (ImageButton) v.findViewById(R.id.last_page_buttom);
+        mLastPageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = CrimePagerActivity.newIntent(getActivity(), mCrime.getId(), 2);
+                startActivity(intent);
+            }
+        });
         return v;
     }
 }

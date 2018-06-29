@@ -29,4 +29,25 @@
         android:layout_height="wrap_content"
         android:text="@string/crime_solved_label"/>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="284dp"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/first_page_buttom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:src="@drawable/arrow_left" />
+
+        <ImageButton
+            android:id="@+id/last_page_buttom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:src="@drawable/arrow_right" />
+
+    </LinearLayout>
+
 </LinearLayout>
