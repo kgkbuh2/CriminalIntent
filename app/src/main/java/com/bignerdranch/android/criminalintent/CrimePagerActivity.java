@@ -8,6 +8,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.ImageButton;
 
 import java.util.List;
 import java.util.UUID;
@@ -20,16 +22,16 @@ public class CrimePagerActivity extends AppCompatActivity {
 
     private static final String EXTRA_CRIME_ID =
             "com.bignerdranch.android.criminalintent.crime_id";
-    private static final String EXTRA_FIRST_LAST =
-            "com.bignerdranch.android.criminalintent.first_last_pos";
 
     private ViewPager mViewPager;
     private List<Crime> mCrimes;
 
-    public static Intent newIntent(Context packageContext, UUID crimeId, int firstLast) {
+    private ImageButton mFirstButton;
+    private ImageButton mLastButton;
+
+    public static Intent newIntent(Context packageContext, UUID crimeId) {
         Intent intent = new Intent(packageContext, CrimePagerActivity.class);
         intent.putExtra(EXTRA_CRIME_ID, crimeId);
-        intent.putExtra(EXTRA_FIRST_LAST, firstLast);
         return intent;
     }
 
@@ -41,8 +43,6 @@ public class CrimePagerActivity extends AppCompatActivity {
 
         UUID crimeId = (UUID) getIntent()
                 .getSerializableExtra(EXTRA_CRIME_ID);
-        int firstLast = (int) getIntent()
-                .getSerializableExtra(EXTRA_FIRST_LAST);
 
         mViewPager = (ViewPager) findViewById(R.id.crime_view_pager);
         mCrimes = CrimeLab.get(this).getCrimes();
@@ -59,22 +59,58 @@ public class CrimePagerActivity extends AppCompatActivity {
             }
         });
 
-        switch(firstLast) {
-            case 1:
+        mFirstButton = (ImageButton) findViewById(R.id.first_page_buttom);
+
+        mFirstButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
                 mViewPager.setCurrentItem(0);
-                break;
-            case 2:
+            }
+        });
+
+        mLastButton = (ImageButton) findViewById(R.id.last_page_buttom);
+
+        mLastButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
                 mViewPager.setCurrentItem(mCrimes.size()-1);
-                break;
-            default:
-                for (int i = 0; i < mCrimes.size(); i++) {
-                    if (mCrimes.get(i).getId().equals(crimeId)) {
-                        mViewPager.setCurrentItem(i);
-                        break;
-                    }
+            }
+        });
+
+        mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener()
+        {
+            @Override
+            public void onPageSelected(int position)
+            {
+                if(position == 0) {
+                    mFirstButton.setEnabled(false);
+                    mFirstButton.setVisibility(View.INVISIBLE);
+                    mLastButton.setEnabled(true);
+                    mLastButton.setVisibility(View.VISIBLE);
+                } else if(position == mCrimes.size()-1) {
+                    mFirstButton.setEnabled(true);
+                    mFirstButton.setVisibility(View.VISIBLE);
+                    mLastButton.setEnabled(false);
+                    mLastButton.setVisibility(View.INVISIBLE);
+                } else {
+                    mFirstButton.setEnabled(true);
+                    mFirstButton.setVisibility(View.VISIBLE);
+                    mLastButton.setEnabled(true);
+                    mLastButton.setVisibility(View.VISIBLE);
                 }
-                break;
+            }
+        });
+
+        for (int i = 0; i < mCrimes.size(); i++) {
+            if (mCrimes.get(i).getId().equals(crimeId)) {
+                mViewPager.setCurrentItem(i);
+                break; }
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mViewPager.clearOnPageChangeListeners();
+    }
 }
