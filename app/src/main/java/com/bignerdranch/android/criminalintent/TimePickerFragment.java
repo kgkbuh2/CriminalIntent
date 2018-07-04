@@ -43,7 +43,7 @@ public class TimePickerFragment extends DialogFragment {
         Date date = (Date) getArguments().getSerializable(ARG_DATE);
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
-        int hour = calendar.get(Calendar.HOUR);
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int minute = calendar.get(Calendar.MINUTE);
 
         View v = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_time, null);
@@ -58,14 +58,14 @@ public class TimePickerFragment extends DialogFragment {
                     public void onClick(DialogInterface dialog, int which) {
                         int hour = mTimePicker.getCurrentHour();
                         int minute = mTimePicker.getCurrentMinute();
-                        Time time = new Time(hour*60+minute);
+                        long time = (hour*60+minute)*60*1000;
                         sendResult(Activity.RESULT_OK, time);
                     }
                 })
                 .create();
     }
 
-    private void sendResult(int resultCode, Time time) {
+    private void sendResult(int resultCode, long time) {
         if (getTargetFragment() == null) {
             return; }
         Intent intent = new Intent();

@@ -2,6 +2,7 @@ package com.bignerdranch.android.criminalintent;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.text.format.DateFormat;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -18,6 +19,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 
 import java.sql.Time;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -54,6 +56,12 @@ public class CrimeFragment extends Fragment {
         super.onCreate(savedInstanceState);
         UUID crimeId = (UUID) getArguments().getSerializable(ARG_CRIME_ID);
         mCrime = CrimeLab.get(getActivity()).getCrime(crimeId);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        CrimeLab.get(getActivity()).updateCrime(mCrime);
     }
 
     @Override
@@ -138,18 +146,32 @@ public class CrimeFragment extends Fragment {
             mCrime.setDate(date);
             updateDate();
         }
-//        if (requestCode == REQUEST_TIME) {
-//            Time time = (Time) data.getSerializableExtra(TimePickerFragment.EXTRA_TIME);
-//            mCrime.setDate(time);
-//            updateDate();
-//        }
+        if (requestCode == REQUEST_TIME) {
+            long time = (long) data.getSerializableExtra(TimePickerFragment.EXTRA_TIME);
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(mCrime.getDate());
+            int hour = calendar.get(Calendar.HOUR_OF_DAY);
+            int minute = calendar.get(Calendar.MINUTE);
+            int second = calendar.get(Calendar.SECOND);
+
+            long num = calendar.getTimeInMillis() - ((hour*60+minute)*60+second)*1000 +time;
+
+            calendar.setTimeInMillis(num);
+
+            mCrime.setDate(calendar.getTime());
+
+            updateTime();
+        }
     }
 
     private void updateDate() {
-        mDateButton.setText(mCrime.getDate().toString());
+        CharSequence str = DateFormat.format("dd-MM-yyyy", mCrime.getDate());
+        mDateButton.setText(str);
     }
 
     private void updateTime() {
-        mTimeButton.setText(mCrime.getDate().toString());
+        CharSequence str = DateFormat.format("HH:mm", mCrime.getDate());
+        mTimeButton.setText(str);
     }
 }
